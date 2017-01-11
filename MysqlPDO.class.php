@@ -33,22 +33,22 @@ class MysqlPDO
     if($this->dbh == null){
       return 0;
     }
-		try{
-    	$stmt = $this->dbh->prepare($sql);
-			$stmt->execute($a_params);
-    	$affected_rows = $stmt->rowCount();
-			if($need_inserted_id){
-				return $affected_rows>0?$this->dbh->lastInsertId():null;
-			}
-    	$this->dbh = null;
-    	return $affected_rows;
-		}catch(Exception $e) {
+    try{
+      $stmt = $this->dbh->prepare($sql);
+      $stmt->execute($a_params);
+      $affected_rows = $stmt->rowCount();
+      if($need_inserted_id){
+        return $affected_rows>0?$this->dbh->lastInsertId():null;
+      }
+      $this->dbh = null;
+      return $affected_rows;
+    }catch(Exception $e) {
       if(MysqlPDO::$isDebug)
       {
         echo $e->getMessage();
       }
-			return 0;
-		}
+      return 0;
+    }
   }
 
 
@@ -57,22 +57,22 @@ class MysqlPDO
     if($this->dbh == null){
       return array();
     }
-		try{
-			$stmt = $this->dbh->prepare($sql);
-			$stmt->setFetchMode(PDO::FETCH_ASSOC); //Could also be FETCH_NUM, FETCH_OBJ, or FETCH_CLASS
-    	$result = null;
-    	if($stmt->execute($a_params)){
-     		$result = $stmt->fetchAll();
-    	}
-    	$this->dbh = null;
-    	return $result;
-		}catch(Exception $e) {
+    try{
+      $stmt = $this->dbh->prepare($sql);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC); //Could also be FETCH_NUM, FETCH_OBJ, or FETCH_CLASS
+      $result = null;
+      if($stmt->execute($a_params)){
+        $result = $stmt->fetchAll();
+      }
+      $this->dbh = null;
+      return $result;
+    }catch(Exception $e) {
       if(MysqlPDO::$isDebug)
       {
         echo $e->getMessage();
       }
-			return null;
-		}
+      return null;
+    }
   }
 
 }

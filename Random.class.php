@@ -16,20 +16,20 @@
       return $min + $rnd;
     }
   
-		/*
-		 * generate random string of length $length
-		 * level: 1-only numbers, 2-plus letters(upper and lower), 3- plus special chars
-		 */
+    /*
+     * generate random string of length $length
+     * level: 1-only numbers, 2-plus letters(upper and lower), 3- plus special chars
+     */
     public static function randomString($length, $level=2)
     {
       $token = '';
       $codeAlphabet = '0123456789';
       if($level > 1){
-				$codeAlphabet.= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      	$codeAlphabet.= 'abcdefghijklmnopqrstuvwxyz';
-			}
-			if($level > 2)
-				$codeAlphabet.= '+-*/?!%`~@#^&(){}';
+        $codeAlphabet.= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codeAlphabet.= 'abcdefghijklmnopqrstuvwxyz';
+      }
+      if($level > 2)
+        $codeAlphabet.= '+-*/?!%`~@#^&(){}';
 
       $max = strlen($codeAlphabet) - 1;
       for ($i=0; $i < $length; $i++) {
