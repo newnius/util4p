@@ -27,7 +27,7 @@ class SQLBuilder
   public function select($table, $selected_rows=array()){
     $this->sql = 'SELECT ';
     foreach( $selected_rows as $row ){
-      $this->sql .= "$row, ";
+      $this->sql .= "`$row`, ";
     }
     if(count($selected_rows) == 0){
       $this->sql .= ' * ';
