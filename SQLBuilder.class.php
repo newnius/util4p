@@ -88,16 +88,15 @@ class SQLBuilder
     } 
   }
 
-  public function order($by_arr, $order = 'desc'){
+  public function order($by_arr){
     if($by_arr==null || count($by_arr) == 0){
       return ;
     }
     $this->sql .= ' ORDER BY ';
-    foreach( $by_arr as $by ){
-      $this->sql .= "`$by`, ";
+    foreach( $by_arr as $by => $order ){
+      $this->sql .= "`$by` $order, ";
     }
     $this->sql = substr($this->sql, 0, strlen($this->sql)-2);
-    $this->sql .= $order=='desc'?' desc ':' asc ';
   }
 
   public function limit($offset, $cnt){
