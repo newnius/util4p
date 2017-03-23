@@ -1,9 +1,16 @@
 <?php
   class Random
   {
+    const LEVEL_LOW = 1;
+    const LEVEL_MIDDLE = 2;
+    const LEVEL_HIGH = 3;
+
+    /*
+     * generate a digit in range of [$min, $max]
+     */
     public static function randomInt($min, $max)
     {
-      $range = $max - $min;
+      $range = intval($max) - intval($min);
       if ($range < 1) return $min; // not so random...
       $log = ceil(log($range, 2));
       $bytes = (int) ($log / 8) + 1; // length in bytes
@@ -18,25 +25,24 @@
   
     /*
      * generate random string of length $length
-     * level: 1-only numbers, 2-plus letters(upper and lower), 3- plus special chars
+     * level: LOW - only numbers, MIDDLE - plus letters(upper and lower), HIGH - plus special chars
      */
-    public static function randomString($length, $level=2)
+    public static function randomString($strlen, $level=self::LEVEL_MIDDLE)
     {
-      $token = '';
       $codeAlphabet = '0123456789';
-      if($level > 1){
+      if($level > self::LEVEL_LOW){
         $codeAlphabet.= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $codeAlphabet.= 'abcdefghijklmnopqrstuvwxyz';
       }
-      if($level > 2)
+      if($level > self::LEVEL_MIDDLE)
         $codeAlphabet.= '+-*/?!%`~@#^&(){}';
 
-      $max = strlen($codeAlphabet) - 1;
-      for ($i=0; $i < $length; $i++) {
-        $token .= $codeAlphabet[Random::randomInt(0, $max)];
+      $length = strlen($codeAlphabet);
+      $token = '';
+      for ($i=0; $i < $strlen; $i++) {
+        $token .= $codeAlphabet[self::randomInt(0, $length-1)];
       }
       return $token;
     }
-  }
 
-?>
+  }
