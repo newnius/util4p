@@ -18,7 +18,7 @@
 		{
 			self::$scheme = $config->get('scheme', self::$scheme);
 			self::$host = $config->get('host', self::$host);
-		self::$port = $config->getInt('port', self::$port);
+			self::$port = $config->getInt('port', self::$port);
 		}
 
 		public static function instance()

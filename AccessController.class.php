@@ -1,6 +1,6 @@
 <?php
 
-  class AccessController
+	class AccessController
 	{
 		// $operation => arrayof roles
 		private static $rules_array = array(
