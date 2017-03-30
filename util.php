@@ -90,7 +90,7 @@
 	 * @param   string  url
 	 * @param   int     timeout
 	 * @param   bool    HTTPS strict check
-	 * @return  array('err'=>'', 'headers'=>''. 'content'=>'')
+	 * @return  array('err'=>'', 'headers'=>''. 'info'=>'', 'content'=>'')
 	 */
 	function cr_curl($url, $timeout = 15, $CA = true)
 	{
@@ -112,12 +112,34 @@
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); //避免data数据过长问题
 		curl_setopt($ch, CURLOPT_POST, false);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_HEADER, 1);
 		$ret = curl_exec($ch);
 		$response['err'] = curl_error($ch);
+		if(!$response['err']){
+			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+			$header = substr($ret, 0, $header_size);
+			$headers = array();
+			// Split the string on every "double" new line.
+			$arrRequests = explode("\r\n\r\n", $header);
+			// Loop of response headers. The "count() -1" is to avoid an empty row for the extra line break before the body of the response.
+			for ($index = 0; $index < count($arrRequests) -1; $index++) {
+				foreach (explode("\r\n", $arrRequests[$index]) as $i => $line)
+				{
+					if ($i === 0)
+						$headers[$index]['http_code'] = $line;
+					else
+					{
+						list ($key, $value) = explode(': ', $line);
+						$headers[$index][$key] = $value;
+					}
+				}
+			}
+			$body = substr($ret, $header_size);
+			$response['headers'] = $headers[max(0, count($headers)-1)];
+			$response['content'] = $body;
+		}
 		if(!$response['err'])
-			$response['headers'] = curl_getinfo($ch);
-		if(!$response['err'])
-			$response['content'] = $ret;
+			$response['info'] = curl_getinfo($ch);
 		curl_close($ch);
 		return $response;
 	}
