@@ -82,3 +82,42 @@
 		}
 		return $default;
 	}
+
+	/**
+	 * curl (support https)
+	 * origin: http://blog.csdn.net/linvo/article/details/8816079
+	 * 
+	 * @param   string  url
+	 * @param   int     timeout
+	 * @param   bool    HTTPS strict check
+	 * @return  array('err'=>'', 'headers'=>''. 'content'=>'')
+	 */
+	function cr_curl($url, $timeout = 15, $CA = true)
+	{
+		$cacert = dirname(__FILE__).'/cacert.pem'; //CA根证书
+		$SSL = substr($url, 0, 8) == "https://" ? true : false;
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout-2);
+		if ($SSL && $CA) {
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);   // 只信任CA颁布的证书
+			curl_setopt($ch, CURLOPT_CAINFO, $cacert); // CA根证书（用来验证的网站证书是否是CA颁布）
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 检查证书中是否设置域名，并且是否与提供的主机名匹配
+		} else if ($SSL && !$CA) {
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 信任任何证书
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1); // 检查证书中是否设置域名
+		}
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); //避免data数据过长问题
+		curl_setopt($ch, CURLOPT_POST, false);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		$ret = curl_exec($ch);
+		$response['err'] = curl_error($ch);
+		if(!$response['err'])
+			$response['headers'] = curl_getinfo($ch);
+		if(!$response['err'])
+			$response['content'] = $ret;
+		curl_close($ch);
+		return $response;
+	}

@@ -13,12 +13,14 @@
 		private static $scheme = 'tcp';
 		private static $host = 'localhost';
 		private static $port = 6379;
+		private static $show_error = true;
 
 		public static function configure($config)
 		{
 			self::$scheme = $config->get('scheme', self::$scheme);
 			self::$host = $config->get('host', self::$host);
 			self::$port = $config->getInt('port', self::$port);
+			self::$show_error = $config->getBool('show_error', self::$show_error);
 		}
 
 		public static function instance()
@@ -34,7 +36,8 @@
 				$redis->connect();
 				return $redis;
 			} catch (Exception $e){
-				var_dump($e->getMessage());
+				if(self::$show_error)
+					var_dump($e->getMessage());
 				return null;
 			}
 		}
