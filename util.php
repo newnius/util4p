@@ -1,5 +1,6 @@
 <?php
-	
+
+	/* @deprecated */
 	function cr_require_file($filename)
 	{
 		if(file_exists($filename))
@@ -14,31 +15,33 @@
 
   /*
    * get client side ip
+	 * Notice: This method works best in the situation where the server is behind proxy
+	 *   and proxy will replace HTTP_CLIENT_IP. If your app is exposed straight to
+	 *   the Internet, this may return a wrong ip when a visits from Intranet but
+	 *   claims from Internet. It is a trade-off.
    */
 	function cr_get_client_ip()
 	{
-		$ip = false;
-		return ($ip ? $ip : $_SERVER['REMOTE_ADDR']); 
-		if(!empty($_SERVER['HTTP_CLIENT_IP'])){ 
-			$ip=$_SERVER['HTTP_CLIENT_IP']; 
-		}
-		if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){ 
-			$ips=explode (', ', $_SERVER['HTTP_X_FORWARDED_FOR']); 
-			if($ip){
-				array_unshift($ips, $ip); 
-				$ip=false;
-			}
-			for ($i=0; $i < count($ips); $i++){
-				if(!preg_match ('/^(10│172.16│192.168)./i', $ips[$i])){
-					$ip=$ips[$i];
-					break;
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if(preg_match ('/^(10│172.16│192.168)./i', $ip))
+		{// REMOTE_ADDR may not be real ip in case server is behind proxy (nginx, docker etc.)
+			if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			}else if(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+			{
+				$ips = explode (', ', $_SERVER['HTTP_X_FORWARDED_FOR']);
+				for ($i=0; $i < count($ips); $i++){
+					if(!preg_match ('/^(10│172.16│192.168)./i', $ips[$i])){
+						$ip = $ips[$i];
+						break;
+					}
 				}
 			}
 		}
-		return ($ip ? $ip : $_SERVER['REMOTE_ADDR']); 
+		return $ip;
 	}
 
-
+	/* @deprecated */
 	function cr_get($value, $default)
 	{
 		if(isset($value) && !empty($value)){
@@ -47,7 +50,7 @@
 		return $default;
 	}
 
-  // get is the same with GET
+  /* get from $_GET */
 	function cr_get_GET($key, $default=null)
 	{
 		if(isset($_GET[$key]) && strlen($_GET[$key])>0 ){
@@ -56,7 +59,7 @@
 		return $default;
 	}
 
-	// post is the same with POST
+	/* get from $_POST */
 	function cr_get_POST($key, $default=null)
 	{
 		if(isset($_POST[$key]) && strlen($_POST[$key])>0 ){
@@ -65,7 +68,9 @@
 		return $default;
 	}
 
-	// get is the same with GET
+	/* @deprecated
+	 * get from $_SESSION
+	 */
 	function cr_get_SESSION($key, $default=null)
 	{
 		if(isset($_SESSION[$key]) && strlen($_SESSION[$key]>0)){
@@ -74,7 +79,9 @@
 		return $default;
 	}
 
-  // get is the same with SERVER
+	/* @deprecated
+   * get from $_SERVER
+	 */
 	function cr_get_SERVER($key, $default=null)
 	{
 		if(isset($_SERVER[$key])){

@@ -14,11 +14,12 @@
 			self::$bind_ip = $config->getBool('bind_ip', self::$bind_ip);
 		}
 
+
 		/*
 		 */
-		public static function put($key, $value, $namespace='default')
+		public static function put($key, $value)
 		{
-			$_SESSION[$namespace][$key] = $value;
+			$_SESSION[$key] = $value;
 			$_SESSION['_SELF']['LAST_ACTIVE'] = time();
 			return true;
 		}
@@ -26,7 +27,7 @@
 
 		/*
 		 */
-		public static function get($key, $default=null, $namespace='default')
+		public static function get($key, $default=null)
 		{
 			if(!isset($_SESSION['_SELF']['LAST_ACTIVE'])){
 				$_SESSION['_SELF']['LAST_ACTIVE'] = 0;
@@ -35,35 +36,16 @@
 				return $default;
 			}
 			$_SESSION['_SELF']['LAST_ACTIVE'] = time();
-			if(isset($_SESSION[$namespace][$key]))
+			if(isset($_SESSION[$key]) && !is_null($_SESSION[$key]))
 			{
-				return $_SESSION[$namespace][$key];
+				return $_SESSION[$key];
 			}
 			return $default;
 		}
 
 
-		/*
-		 */
-		public static function remove($key, $namespace='default')
-		{
-			unset($_SESSION[$namespace][$key]);
-			return true;
-		}
-
-
-		/*
-		 */
-		public static function clear($namespace='default')
-		{
-			$_SESSION[$namespace] = array();
-			return true;
-		}
-
-
-		/*
-		 */
-		public static function clearAll()
+		/* expire current session */
+		public static function expire()
 		{
 			$_SESSION=array();
 			session_destroy();

@@ -7,6 +7,8 @@
 
 		/*
 		 * generate a digit in range of [$min, $max]
+		 * origin: stackoverflow
+		 * notice: this method tends to generate unique numbers compared with rand()
 		 */
 		public static function randomInt($min, $max)
 		{
@@ -29,18 +31,18 @@
 		 */
 		public static function randomString($strlen, $level=self::LEVEL_MIDDLE)
 		{
-			$codeAlphabet = '0123456789';
+			$alphabet = '0123456789';
 			if($level > self::LEVEL_LOW){
-				$codeAlphabet.= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				$codeAlphabet.= 'abcdefghijklmnopqrstuvwxyz';
+				$alphabet .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				$alphabet .= 'abcdefghijklmnopqrstuvwxyz';
 			}
 			if($level > self::LEVEL_MIDDLE)
-				$codeAlphabet.= '+-*/?!%`~@#^&(){}';
+				$alphabet .= '+-*/?!%`~@#^&(){}';
 
-			$length = strlen($codeAlphabet);
+			$length = strlen($alphabet);
 			$token = '';
 			for ($i=0; $i < $strlen; $i++) {
-				$token .= $codeAlphabet[self::randomInt(0, $length-1)];
+				$token .= $alphabet[self::randomInt(0, $length-1)];
 			}
 			return $token;
 		}

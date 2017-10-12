@@ -1,8 +1,8 @@
 <?php
 	require_once('util.php');
 	require_once('CRObject.class.php');
-	require_once('MysqlPDO.class.php');
 	require_once('SQLBuilder.class.php');
+	require_once('MysqlPDO.class.php');
 
 	class CRLogger
 	{
@@ -22,6 +22,7 @@
 
 		public static function log2db($log)
 		{
+			$scope = $log->get('scope', '');
 			$tag = $log->get('tag');
 			$level = $log->getInt('level', self::LEVEL_INFO);
 			$ip = $log->get('ip', cr_get_client_ip());
@@ -29,13 +30,13 @@
 			$content = $log->get('content');
 
 			$key_values = array(
-				'tag' => '?', 'level' => '?', 'ip' => '?', 'time' => '?', 'content' => '?'
+				'scope' => '?', 'tag' => '?', 'level' => '?', 'ip' => '?', 'time' => '?', 'content' => '?'
 			);
 			$builder = new SQLBuilder();
 			$builder->insert(self::$db_table, $key_values);
 			$sql = $builder->build();
-			$params = array( $tag, $level, ip2long($ip), $time, $content );
-			return (new MysqlPDO())->execute($sql, $params) == 1;
+			$params = array( $scope, $tag, $level, ip2long($ip), $time, $content );
+			return (new MysqlPDO())->execute($sql, $params) === 1;
 		}
 
 		public static function log2file()
@@ -45,6 +46,7 @@
 
 		public static function search($filter)
 		{
+			$scope = $filter->get('scope');
 			$tag = $filter->get('tag');
 			$level_min = $filter->getInt('level_min');
 			$ip = $filter->get('ip');
@@ -54,17 +56,21 @@
 			$limit = $filter->getInt('limit', -1);
 			$order = $filter->get('order');
 
-			$selected_rows = array('id', 'tag', 'level', 'ip', 'time', 'content');
+			$selected_rows = array('id', 'scope', 'tag', 'level', 'ip', 'time', 'content');
 			$where_arr = array();
 			$opt_arr = array();
 			$order_arr = array();
 			$params = array();
 
+			if(!empty($scope)){
+				$where_arr['scope'] = '?';
+				$params[] = $scope;
+			}
 			if(!empty($tag)){
 				$where_arr['tag'] = '?';
 				$params[] = $tag;
 			}
-			if(!empty($level_min)){
+			if(!is_null($level_min)){
 				$where_arr['level'] = '?';
 				$opt_arr['level'] = '>=';
 				$params[] = $level_min;
@@ -73,18 +79,20 @@
 				$where_arr['ip'] = '?';
 				$params[] = ip2long($ip);
 			}
-			if(!empty($time_begin)){
+			if(!is_null($time_begin) && !is_null($time_end)){
+				$where_arr['time'] = '? AND ?';
+				$opt_arr['time'] = 'BETWEEN';
+				$params[] = $time_begin;
+				$params[] = $time_end;
+			}else if(!is_null($time_begin)){
 				$where_arr['time'] = '?';
 				$opt_arr['time'] = '>=';
 				$params[] = $time_begin;	
-			}
-			/* TODO here is a bug
-			if(!empty($time_end)){
+			}else if(!is_null($time_end)){
 				$where_arr['time'] = '?';
 				$opt_arr['time'] = '<=';
-				$params[] = $time_end;
+				$params[] = $time_end;	
 			}
-			*/
 
 			switch($order){
 				case 'latest':

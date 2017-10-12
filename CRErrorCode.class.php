@@ -27,7 +27,24 @@
 		const NOT_LOGED = 19;
 		const USER_NOT_EXIST = 20;
 		const USER_IS_BLOCKED = 21;
+		const USER_IS_REMOVED = 22;
+		const EMAIL_IS_NOT_VERIFIED = 33;
 
+		const USERNAME_MISMATCH_EMAIL = 23;
+
+		const CODE_EXPIRED = 24;
+		const EMAIL_ALREADY_VERIFIED = 25;
+		const INVALID_COOKIE = 26;
+
+		/* auth */
+		const TOKEN_EXPIRED = 27;
+		const SITE_NOT_EXIST = 28;
+		const INVALID_URL = 29;
+		const INVALID_PARAM = 31;
+		const DOMAIN_MISMATCH = 32;
+
+		/* rate limit */
+		const TOO_FAST = 30;
 
 		public static function getErrorMsg($errno){
 			switch($errno){
@@ -92,10 +109,46 @@
 					return '该条记录未找到！';
 
 				case CRErrorCode::USER_IS_BLOCKED:
-					return '该用户已被锁定！';
+					return '账户已被封禁！';
+
+				case CRErrorCode::USER_IS_REMOVED:
+					return '账户已被注销！';
 
 				case CRErrorCode::INVALID_PASSWORD:
 					return '无效的密码！';
+
+				case CRErrorCode::USERNAME_MISMATCH_EMAIL:
+					return '用户名与邮箱不匹配！';
+
+				case CRErrorCode::CODE_EXPIRED:
+					return '链接已失效！';
+
+				case CRErrorCode::EMAIL_ALREADY_VERIFIED:
+					return '邮箱已验证！';
+
+				case CRErrorCode::TOO_FAST:
+					return '服务器繁忙！';
+
+				case CRErrorCode::INVALID_COOKIE:
+					return '无效的COOKIE！';
+
+				case CRErrorCode::TOKEN_EXPIRED:
+					return 'Token已失效！';
+
+				case CRErrorCode::SITE_NOT_EXIST:
+					return '站点不存在！';
+
+				case CRErrorCode::INVALID_URL:
+					return '无效的URL！';
+
+				case CRErrorCode::INVALID_PARAM:
+					return '无效的参数！';
+
+				case CRErrorCode::DOMAIN_MISMATCH:
+					return '重定向网址不在允许的范围内！';
+
+				case CRErrorCode::EMAIL_IS_NOT_VERIFIED:
+					return '邮箱尚未验证！';
 
 				default:
 					return '未知错误！('.$errno.')';

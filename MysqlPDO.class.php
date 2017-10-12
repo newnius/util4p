@@ -10,7 +10,7 @@
 		private static $user = 'root';
 		private static $password = '';
 		private static $charset = 'utf8';
-
+		private static $show_error = false;
 		private $dbh;
 
 		/*
@@ -23,6 +23,7 @@
 			self::$user = $config->get('user', self::$user);
 			self::$password = $config->get('password', self::$password);
 			self::$charset = $config->get('charset', self::$charset);
+			self::$show_error = $config->getBool('show_error', self::$show_error);
 		}
 
 
@@ -44,7 +45,8 @@
 				return true;
 			} catch (PDOException $e) {
 				$this->dbh = null;
-				var_dump($e->getMessage());
+				if(self::$show_error)
+					var_dump($e->getMessage());
 				return false;
 			}
 		}
@@ -60,14 +62,15 @@
 			try{
 				$stmt = $this->dbh->prepare($sql);
 				$stmt->execute($a_params);
-				$affected_rows = $stmt->rowCount();
+				$result = $stmt->rowCount();//affected rows
 				if($need_inserted_id){
-					return $affected_rows>0?$this->dbh->lastInsertId():null;
+					$result = $result>0?$this->dbh->lastInsertId():null;
 				}
 				$this->dbh = null;
-				return $affected_rows;
+				return $result;
 			}catch(Exception $e) {
-				var_dump($e->getMessage());
+				if(self::$show_error)
+					var_dump($e->getMessage());
 				return null;
 			}
 		}
@@ -90,7 +93,8 @@
 				$this->dbh = null;
 				return $result;
 			}catch(Exception $e) {
-				var_dump($e->getMessage());
+				if(self::$show_error)
+					var_dump($e->getMessage());
 				return null;
 			}
 		}

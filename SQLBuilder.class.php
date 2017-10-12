@@ -1,5 +1,12 @@
 <?php
 
+	/*
+	 * Replace long SQL string with several functions
+	 * Fixed SQL string is hard to migrate to another DB whose syntax may differ.
+	 * Using a high level abstract interface makes code clean and easy to migrate.
+	 * Is is strongly recommended to use prepared statment in order to avoid SQL-injection
+	 */
+
 	class SQLBuilder
 	{
 		private $sql = '';
@@ -24,9 +31,9 @@
 			{
 				if($value === null){
 					$this->sql .= "null, ";
-				}else if($value === '?'){
+				}else if($value === '?'){// support prepared statment
 					$this->sql .= "?, ";
-				}else{
+				}else{// FIXME: $value may contains '
 					$this->sql .= "'$value', ";
 				}
 			}
@@ -71,7 +78,7 @@
 					$this->sql .= " `$key` = null, ";
 				}else if($value === '?'){
 					$this->sql .= " `$key` = ?, ";
-				}else{
+				}else{//FIXME: $value may contain '
 					$this->sql .= " `$key` = '$value', ";
 				}
 			}
@@ -117,7 +124,7 @@
 				}else if($arr[$key] === '?' || in_array(strtoupper($opts[$key]), array('IN', 'BETWEEN', 'LIKE')) ){
 					$this->sql .= " `$key` {$opts[$key]} {$arr[$key]} ";
 					$where_clause_cnt++;
-				}else{
+				}else{//FIXME: $arr[$key] may contain '
 					$this->sql .= " `$key` {$opts[$key]} '{$arr[$key]}' ";
 					$where_clause_cnt++;
 				}

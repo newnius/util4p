@@ -13,7 +13,7 @@
 		private static $scheme = 'tcp';
 		private static $host = 'localhost';
 		private static $port = 6379;
-		private static $show_error = true;
+		private static $show_error = false;
 
 		public static function configure($config)
 		{

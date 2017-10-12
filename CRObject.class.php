@@ -27,7 +27,7 @@
 		{
 			if(isset($this->map[$key]) && !is_null($this->map[$key]) && is_numeric($this->map[$key]) )
 			{
-				return intval($this->map[$key]);	
+				return intval($this->map[$key]);
 			}
 			return $default;
 		}
