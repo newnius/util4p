@@ -28,16 +28,13 @@ $value = cr_get_POST($key);
 require_once('util4p/AccessController.class.php');
 
 /* init access map */
-function init_accessMap()
-{
-	// $operation => array of roles
-	$map = array(
-		/* user */
-		'user.get' => array('admin', 'user'),
-		'user.add' => array('admin')
-	);
-	AccessController::setMap($map);
-}
+// $operation => array of roles
+$map = array(
+	/* user */
+	'user.get' => array('admin', 'user'),
+	'user.add' => array('admin')
+);
+AccessController::setMap($map);
 
 /* validate */
 echo AccessController::hasAccess('normal', 'user.add'));//false
@@ -290,13 +287,13 @@ require_once('Validator.class.php');
 
 /* validate email */
 $email = 'admin@example.com';
-if()Validator::isEmail($email)){
+if(Validator::isEmail($email)){
     echo 'valid email';
 }
 
 /* validate IPv4 */
 $ip = '8.8.8.8';
-if()Validator::isIP($ip)){
+if(Validator::isIP($ip)){
     echo 'valid IPv4';
 }
 ```
